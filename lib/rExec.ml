@@ -343,7 +343,14 @@ let start_connection params clients =
         Log.debug (fun f -> f "request_id %S without client" request_id);
         Lwt.return_unit
 
-let listen t handler =
+let noop_handler ~user:_ cmd _flow =
+  match cmd with
+  | "QUBESRPC qubes.WaitForSession none" -> Lwt.return 0 (* Always ready! *)
+  | cmd ->
+      Log.warn (fun f -> f "Unknown command %S" cmd);
+      Lwt.return 1
+
+let listen t ?(handler = noop_handler) () =
   let rec loop () =
     recv t.t >>= function
     | `Ok (`Just_exec | `Exec_cmdline as ty, data) ->

@@ -38,10 +38,11 @@ val connect : domid:int -> unit -> t Lwt.t
     Internally, it creates a server endpoint and places the endpoint information
     in XenStore, then waits for a client to connect. *)
 
-val listen :  t -> handler -> unit Lwt.t
-(** [listen t handler] is a thread that reads incoming requests from [t]
+val listen :  t -> ?handler:handler -> unit -> unit Lwt.t
+(** [listen t handler ()] is a thread that reads incoming requests from [t]
     and handles each one asynchronously with [handler]. The loop ends if
-    the client disconnects. *)
+    the client disconnects. The default [handler] function reply ready for command
+    "QUBESRPC qubes.WaitForSession none" and nothing else. *)
 
 val qrexec : t -> vm:string -> service:string -> client -> [`Ok | `Closed] Lwt.t
 (** [qrexec t ~vm ~service ~client] initiates a qrexec call to [vm]'s service
