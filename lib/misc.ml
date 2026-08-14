@@ -6,7 +6,7 @@ let check_memory ?(fraction=40) () =
     (* Assuming 64bits integers, the following should not overlap *)
     free_words * 100 >  heap_words * fraction
   in
-  let stats = Xen_os.Memory.stat () in
+  let stats = Xen_os.Memory.quick_stat () in
   if is_enough stats then `Ok
   else (
     Gc.full_major ();
